@@ -52,7 +52,5 @@ public class Food {
 	public String toString() {
 		return display_name;
 	}
-
-	
 	
 }

@@ -5,8 +5,10 @@
 package it.polito.tdp.food;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.food.model.Food;
 import it.polito.tdp.food.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -41,7 +43,7 @@ public class FoodController {
     private Button btnSimula; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxFood"
-    private ComboBox<?> boxFood; // Value injected by FXMLLoader
+    private ComboBox<Food> boxFood; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -49,13 +51,41 @@ public class FoodController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Creazione grafo...");
+    	boxFood.getItems().clear();
+    	
+    	try {
+    		int nPorzioni = Integer.parseInt(txtPorzioni.getText());
+    		
+    		this.model.creaGrafo(nPorzioni);
+    		
+    		txtResult.appendText("Grafo creato!\n");
+        	txtResult.appendText("# Vertici " + this.model.getNumVertici() + "\n");
+        	txtResult.appendText("# Archi " + this.model.getNumArchi() + "\n");
+        	
+        	// Dopo aver creato il grafo possiamo popolare il menu a tendina dei cibi
+        	boxFood.getItems().addAll(this.model.getVertici());
+        	
+    	} catch (NumberFormatException e) {
+    		txtResult.appendText("Per favore inserire un numero di calorie valido!\n");
+    		return;
+    	}
     }
     
     @FXML
     void doCalorie(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Analisi calorie...");
+    	
+    	Food f = boxFood.getValue();
+    	if (f == null) {
+    		txtResult.appendText("Per favore selezionare un cibo dalla tendina!\n");
+    		return;
+    	}
+    	
+    	List<Food> adiacenti = this.model.getAdiacentiCalorieMassime(f);
+    	txtResult.appendText("I cibi con le calorie congiunte massime a '" + f + "' sono: \n");
+    	for (Food food : adiacenti) {
+    		txtResult.appendText(food + " " + this.model.getPesoArco(f, food) + "\n");
+    	}
     }
 
     @FXML
