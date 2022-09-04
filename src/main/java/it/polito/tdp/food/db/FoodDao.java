@@ -51,7 +51,8 @@ public class FoodDao {
 				+ "FROM portion p, food f "
 				+ "WHERE p.food_code = f.food_code "
 				+ "GROUP BY p.food_code "
-				+ "HAVING COUNT(*) <= ?" ;
+				+ "HAVING COUNT(*) = ? "
+				+ "ORDER BY f.display_name" ;
 		try {
 			Connection conn = DBConnect.getConnection() ;
 

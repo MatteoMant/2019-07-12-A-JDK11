@@ -1,5 +1,6 @@
 package it.polito.tdp.food.model;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,33 +42,28 @@ public class Model {
 		
 	}
 	
-	public List<Food> getAdiacentiCalorieMassime(Food f) {
-		List<Food> result = new LinkedList<>();
+	public List<FoodCalories> getAdiacentiCalorieMassime(Food f) {
+		List<FoodCalories> result = new LinkedList<>();
 		List<Food> adiacenti = Graphs.neighborListOf(this.grafo, f);
-		
-		for (int i = 0; i < 5; i++) {
-			double pesoMax = 0.0;
-			Food best = null;
-			
-			for (Food adiacente : adiacenti) {
-				double peso = this.grafo.getEdgeWeight(this.grafo.getEdge(f, adiacente));
-				if (peso > pesoMax) {
-					pesoMax = peso;
-					best = adiacente;
-				}
-			}
-			result.add(best);
-			adiacenti.remove(best);
+				
+		for (Food adiacente : adiacenti) {
+			double peso = this.grafo.getEdgeWeight(this.grafo.getEdge(f, adiacente));
+			result.add(new FoodCalories(adiacente, peso));
 		}
+		
+		Collections.sort(result);
+
 		return result;
 	}
 	
-	public double getPesoArco(Food f1, Food f2) {
-		
-		if(this.grafo.getEdge(f1, f2) != null)
-			return this.grafo.getEdgeWeight(this.grafo.getEdge(f1, f2));
-		else 
-			return -1;
+	public String simula(Food cibo, int K) {
+		Simulatore sim = new Simulatore(this.grafo, this) ;
+		sim.setNumStazioni(K);
+		sim.init(cibo);
+		sim.run();
+		String messaggio = String.format("Preparati %d cibi in %f minuti\n", 
+				sim.getCibiPreparati(), sim.getTempoTotPreparazione());
+		return messaggio ;
 	}
 	
 	public Set<Food> getVertici(){

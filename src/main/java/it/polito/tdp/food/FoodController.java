@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.food.model.Food;
+import it.polito.tdp.food.model.FoodCalories;
 import it.polito.tdp.food.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -81,17 +82,40 @@ public class FoodController {
     		return;
     	}
     	
-    	List<Food> adiacenti = this.model.getAdiacentiCalorieMassime(f);
+    	List<FoodCalories> adiacenti = this.model.getAdiacentiCalorieMassime(f);
     	txtResult.appendText("I cibi con le calorie congiunte massime a '" + f + "' sono: \n");
-    	for (Food food : adiacenti) {
-    		txtResult.appendText(food + " " + this.model.getPesoArco(f, food) + "\n");
+    	
+    	for (int i = 0; i < 5 && i < adiacenti.size(); i++) {
+    		txtResult.appendText(adiacenti.get(i).getFood() + " " + adiacenti.get(i).getCalories() + "\n");
     	}
+    
     }
 
     @FXML
     void doSimula(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Simulazione...");
+    	
+    	Food f = boxFood.getValue();
+    	if (f == null) {
+    		txtResult.appendText("Per favore selezionare un cibo dalla tendina!\n");
+    		return;
+    	}
+    	
+    	try {
+    		int K = Integer.parseInt(txtK.getText());
+    		
+    		if (K < 1 || K > 10) {
+    			txtResult.appendText("Devi inserire un numero di stazioni tra 1 e 10!\n");
+        		return;
+    		}
+    		
+    		String messaggio = model.simula(f, K);
+    		txtResult.appendText(messaggio);
+    		
+    	} catch (NumberFormatException e) {
+    		txtResult.appendText("Inserire un numero valido di stazioni di lavoro!\n");
+    		return;
+    	}
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
